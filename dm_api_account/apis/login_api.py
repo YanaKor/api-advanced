@@ -15,7 +15,8 @@ class LoginApi:
         """
         login_resp = requests.post(
             url=f'{self.host}/v1/account/login',
-            json=json_data)
+            json=json_data
+        )
         return login_resp
 
 

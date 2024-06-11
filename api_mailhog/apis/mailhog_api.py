@@ -10,6 +10,7 @@ class MailhogApi:
     def get_api_v2_messages(self, limit=50):
         """
         Get users emails
+        :param limit:
         :return:
         """
         params = {
@@ -18,5 +19,6 @@ class MailhogApi:
         mail_resp = requests.get(
             url=f'{self.host}/api/v2/messages',
             params=params,
-            verify=False)
+            verify=False
+        )
         return mail_resp
