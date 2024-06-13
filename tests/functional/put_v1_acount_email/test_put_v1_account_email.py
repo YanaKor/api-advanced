@@ -88,17 +88,6 @@ def test_put_v1_account_email():
     assert mail_resp.status_code == 200, f'Письма не получены {mail_resp.json()}'
 
     # получение нового токена
-
-    def get_new_activation_token_by_email(login, new_email, resp):
-        token = None
-        for item in resp.json()['items']:
-            user_data = loads(item['Content']['Body'])
-            user_login = user_data['Login']
-            user_email = item['Content']['Headers']['To'][0]
-            if user_login == login and user_email == new_email:
-                token = user_data['ConfirmationLinkUrl'].split('/')[-1]
-        return token
-
     new_token = get_new_activation_token_by_email(login, new_email, mail_resp)
 
     assert new_token is not None, f'Токен для пользователя {login} не был получен'
@@ -114,3 +103,13 @@ def test_put_v1_account_email():
     print(login_resp.status_code)
     print(login_resp.text)
     assert login_resp.status_code == 200, f'Пользователь не смог авторизоваться'
+
+def get_new_activation_token_by_email(login, new_email, resp):
+    token = None
+    for item in resp.json()['items']:
+        user_data = loads(item['Content']['Body'])
+        user_login = user_data['Login']
+        user_email = item['Content']['Headers']['To'][0]
+        if user_login == login and user_email == new_email:
+            token = user_data['ConfirmationLinkUrl'].split('/')[-1]
+    return token
