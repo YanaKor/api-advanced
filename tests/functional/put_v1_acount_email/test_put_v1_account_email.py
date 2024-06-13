@@ -8,12 +8,26 @@ from dm_api_account.apis.login_api import LoginApi
 from api_mailhog.apis.mailhog_api import MailhogApi
 
 from tests.functional.post_v1_account.test_post_v1_account import get_activation_token_by_login
+import structlog
+from restclient.configuration import Configuration as MailhogConfiguration
+from restclient.configuration import Configuration as DmApiConfiguration
+
+structlog.configure(
+    processors=[
+        structlog.processors.JSONRenderer(indent=4,
+                                          ensure_ascii=True,
+                                          # sort_keys=True
+                                          )
+    ]
+)
 
 
 def test_put_v1_account_email():
-    account_api = AccountApi(host='http://5.63.153.31:5051')
-    login_api = LoginApi(host='http://5.63.153.31:5051')
-    mailhog_api = MailhogApi(host='http://5.63.153.31:5025')
+    mailhog_configuration = MailhogConfiguration(host='http://5.63.153.31:5025')
+    dm_api_configuration = DmApiConfiguration(host='http://5.63.153.31:5051', disable_log=False)
+    account_api = AccountApi(configuration=dm_api_configuration)
+    login_api = LoginApi(configuration=dm_api_configuration)
+    mailhog_api = MailhogApi(configuration=mailhog_configuration)
 
     # регистрация пользователя
     fake = Faker()

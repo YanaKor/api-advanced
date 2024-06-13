@@ -1,9 +1,9 @@
 from json import loads
+from random import randint
 
 from dm_api_account.apis.account_api import AccountApi
 from dm_api_account.apis.login_api import LoginApi
 from api_mailhog.apis.mailhog_api import MailhogApi
-
 import structlog
 from restclient.configuration import Configuration as MailhogConfiguration
 from restclient.configuration import Configuration as DmApiConfiguration
@@ -26,7 +26,7 @@ def test_post_v1_account():
     login_api = LoginApi(configuration=dm_api_configuration)
     mailhog_api = MailhogApi(configuration=mailhog_configuration)
 
-    login = f'ya_kor_test_6757'
+    login = f'ya_kor_test{randint(5, 10000)}'
     email = f'{login}@mail.ru'
     password = '5668hjghkjkn'
 
