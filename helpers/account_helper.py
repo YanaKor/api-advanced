@@ -37,6 +37,37 @@ class AccountHelper:
         assert login_resp.status_code == 200, f'Пользователь {login} не смог авторизоваться'
         return login_resp
 
+    def get_token(self, login: str, password: str, email: str):
+        json_data = {
+            'login': login,
+            'email': email,
+            'password': password,
+        }
+
+        reg_resp = self.dm_account_api.account_api.post_v1_account(json_data)
+        assert reg_resp.status_code == 201, f'Пользователь не был создан {reg_resp.json()}'
+        mail_resp = self.mailhog.mailhog_api.get_api_v2_messages()
+        assert mail_resp.status_code == 200, f'Письма не получены {reg_resp.json()}'
+        token = self.get_activation_token_by_login(login, mail_resp)
+        assert token is not None, f'Токен для пользователя {login} не был получен'
+
+    def change_email(self, login: str, password: str, email: str, new_email: str):
+
+        json_data = {
+            'login': login,
+            'email': email,
+            'password': password,
+        }
+        response = self.dm_account_api.account_api.put_v1_account_email(json_data)
+        assert response.status_code == 200, "email не был изменен"
+        mail_resp = self.mailhog.mailhog_api.get_api_v2_messages()
+        assert mail_resp.status_code == 200, f"Письма не получены {mail_resp.json()}"
+        token = self.get_new_activation_token_by_email(login, new_email, response,)
+        assert token is not None, f"Токен для пользователя {login} не был получен"
+        activate_resp = self.dm_account_api.account_api.put_v1_account_token(token=token)
+        assert activate_resp.status_code == 200, f'Пользователь {login} не был активирован'
+        return activate_resp
+
     @staticmethod
     def get_activation_token_by_login(login, response):
         token = None
@@ -44,5 +75,16 @@ class AccountHelper:
             user_data = loads(item['Content']['Body'])
             user_login = user_data['Login']
             if user_login == login:
+                token = user_data['ConfirmationLinkUrl'].split('/')[-1]
+        return token
+
+    @staticmethod
+    def get_new_activation_token_by_email(login, new_email, resp):
+        token = None
+        for item in resp.json()['items']:
+            user_data = loads(item['Content']['Body'])
+            user_login = user_data['Login']
+            user_email = item['Content']['Headers']['To'][0]
+            if user_login == login and user_email == new_email:
                 token = user_data['ConfirmationLinkUrl'].split('/')[-1]
         return token
