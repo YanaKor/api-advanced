@@ -118,7 +118,6 @@ def test_put_v1_account_email():
     print(login_resp.text)
     assert login_resp.status_code == 200, f'Пользователь не смог авторизоваться'
 
-
 def get_new_activation_token_by_email(login, new_email, resp):
     token = None
     for item in resp.json()['items']:
