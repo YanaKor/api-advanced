@@ -1,7 +1,24 @@
+import time
 from json import loads
 
 from services.dm_api_account import DMApiAccount
 from services.api_mailhog import MailHogApi
+
+
+def retrier(func):
+    def wrapper(*args, **kwargs):
+        token = None
+        count = 0
+        while token is None:
+            print(f'Попытка получения токена номер {count}')
+            token = func(*args, **kwargs)
+            count += 1
+            if count == 5:
+                raise AssertionError('превышено количество попыток получения активационного токена')
+            if token:
+                return token
+            time.sleep(1)
+    return wrapper
 
 
 class AccountHelper:
@@ -19,10 +36,10 @@ class AccountHelper:
         reg_resp = self.dm_account_api.account_api.post_v1_account(json_data)
         assert reg_resp.status_code == 201, f'Пользователь не был создан {reg_resp.json()}'
 
-        mail_resp = self.mailhog.mailhog_api.get_api_v2_messages()
-        assert mail_resp.status_code == 200, f'Письма не получены {reg_resp.json()}'
 
-        token = self.get_activation_token_by_login(login, mail_resp)
+        # assert mail_resp.status_code == 200, f'Письма не получены {reg_resp.json()}'
+
+        token = self.get_activation_token_by_login(login)
         assert token is not None, f'Токен для пользователя {login} не был получен'
 
         activate_resp = self.dm_account_api.account_api.put_v1_account_token(token)
@@ -78,10 +95,11 @@ class AccountHelper:
         response = self.dm_account_api.account_api.put_v1_account_token(token=token)
         assert response.status_code == 200, "Пользователь не активирован"
 
-    @staticmethod
-    def get_activation_token_by_login(login, response):
+    @retrier
+    def get_activation_token_by_login(self, login):
         token = None
-        for item in response.json()['items']:
+        mail_resp = self.mailhog.mailhog_api.get_api_v2_messages()
+        for item in mail_resp.json()['items']:
             user_data = loads(item['Content']['Body'])
             user_login = user_data['Login']
             if user_login == login:
