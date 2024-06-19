@@ -34,5 +34,5 @@ def test_put_v1_account_token():
     email = f'{login}@mail.ru'
     password = fake.password(length=12, special_chars=True, digits=True, upper_case=True, lower_case=True)
 
-    account_helper.get_token(login=login, email=email, password=password)
+    account_helper.register_user(login=login, email=email, password=password)
     account_helper.user_login(login=login, password=password)

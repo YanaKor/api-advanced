@@ -18,10 +18,13 @@ class AccountHelper:
 
         reg_resp = self.dm_account_api.account_api.post_v1_account(json_data)
         assert reg_resp.status_code == 201, f'Пользователь не был создан {reg_resp.json()}'
+
         mail_resp = self.mailhog.mailhog_api.get_api_v2_messages()
         assert mail_resp.status_code == 200, f'Письма не получены {reg_resp.json()}'
+
         token = self.get_activation_token_by_login(login, mail_resp)
         assert token is not None, f'Токен для пользователя {login} не был получен'
+
         activate_resp = self.dm_account_api.account_api.put_v1_account_token(token)
         assert activate_resp.status_code == 200, f'Пользователь {login} не был активирован'
         return activate_resp
@@ -30,28 +33,14 @@ class AccountHelper:
         json_data = {
             'login': login,
             'password': password,
-            'rememberMe': True,
+            'rememberMe': remember_me,
         }
 
         login_resp = self.dm_account_api.login_api.post_v1_account_login(json_data)
         assert login_resp.status_code == 200, f'Пользователь {login} не смог авторизоваться'
         return login_resp
 
-    def get_token(self, login: str, password: str, email: str):
-        json_data = {
-            'login': login,
-            'email': email,
-            'password': password,
-        }
-
-        reg_resp = self.dm_account_api.account_api.post_v1_account(json_data)
-        assert reg_resp.status_code == 201, f'Пользователь не был создан {reg_resp.json()}'
-        mail_resp = self.mailhog.mailhog_api.get_api_v2_messages()
-        assert mail_resp.status_code == 200, f'Письма не получены {reg_resp.json()}'
-        token = self.get_activation_token_by_login(login, mail_resp)
-        assert token is not None, f'Токен для пользователя {login} не был получен'
-
-    def change_email(self, login: str, password: str, email: str, new_email: str):
+    def change_email(self, login: str, password: str, email: str):
 
         json_data = {
             'login': login,
@@ -62,11 +51,32 @@ class AccountHelper:
         assert response.status_code == 200, "email не был изменен"
         mail_resp = self.mailhog.mailhog_api.get_api_v2_messages()
         assert mail_resp.status_code == 200, f"Письма не получены {mail_resp.json()}"
-        token = self.get_new_activation_token_by_email(login, new_email, response,)
+        token = self.get_activation_token_by_login(login, mail_resp)
         assert token is not None, f"Токен для пользователя {login} не был получен"
-        activate_resp = self.dm_account_api.account_api.put_v1_account_token(token=token)
-        assert activate_resp.status_code == 200, f'Пользователь {login} не был активирован'
-        return activate_resp
+
+    def user_login_403(self, login: str, password: str, remember_me: bool = True):
+
+        json_data = {
+            'login': login,
+            'password': password,
+            'rememberMe': remember_me,
+        }
+
+        login_resp = self.dm_account_api.login_api.post_v1_account_login(json_data=json_data)
+        assert login_resp.status_code == 403, 'Пользователь смог авторизоваться'
+        return login_resp
+
+    def activation_user_after_change_email(self, email: str):
+        mail_resp = self.mailhog.mailhog_api.get_api_v2_messages()
+        assert mail_resp.status_code == 200, f'Письма не получены {mail_resp.json()}'
+        print(mail_resp.json())
+        token = self.get_new_activation_token_by_email(email, mail_resp)
+        assert token is not None, f"Токен для пользователя c {email} не получен"
+
+        # Активация пользователя
+
+        response = self.dm_account_api.account_api.put_v1_account_token(token=token)
+        assert response.status_code == 200, "Пользователь не активирован"
 
     @staticmethod
     def get_activation_token_by_login(login, response):
@@ -79,12 +89,11 @@ class AccountHelper:
         return token
 
     @staticmethod
-    def get_new_activation_token_by_email(login, new_email, resp):
+    def get_new_activation_token_by_email(changed_email, resp):
         token = None
         for item in resp.json()['items']:
             user_data = loads(item['Content']['Body'])
-            user_login = user_data['Login']
             user_email = item['Content']['Headers']['To'][0]
-            if user_login == login and user_email == new_email:
+            if user_email == changed_email:
                 token = user_data['ConfirmationLinkUrl'].split('/')[-1]
         return token
