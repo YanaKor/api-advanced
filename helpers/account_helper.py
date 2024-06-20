@@ -128,6 +128,16 @@ class AccountHelper:
         assert response.status_code == 200, 'Пароль не был изменен'
         return response
 
+    def logout_user(self):
+        response = self.dm_account_api.login_api.delete_v1_account_login()
+        assert response.status_code == 204, 'Пользователь не вышел из учетной записи'
+        return response
+
+    def logout_user_from_all_device(self):
+        response = self.dm_account_api.login_api.delete_v1_account_login_all()
+        assert response.status_code == 204, 'Пользователь не вышел из учетной записи на всех устройствах'
+        return response
+
     @retry(stop_max_attempt_number=5, retry_on_result=retry_if_result_none, wait_fixed=1000)
     def get_activation_token_by_login(self, login):
         token = None
