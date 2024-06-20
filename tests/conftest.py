@@ -1,5 +1,6 @@
 from collections import namedtuple
 from datetime import datetime
+from random import randint
 
 import pytest
 from restclient.configuration import Configuration as MailhogConfiguration
@@ -48,7 +49,7 @@ def auth_account_api(mailhog_api):
     account = DMApiAccount(configuration=dm_api_configuration)
     account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog_api)
     account_helper.auth_client(
-            login='ya_kor_20_06_2024_18_23_54',
+            login='ya_kor_20_06_2024_20_56_24',
             password='5668hjghkjkn'
     )
     return account_helper
@@ -58,11 +59,12 @@ def auth_account_api(mailhog_api):
 def prepare_user():
     now = datetime.now()
     data = now.strftime('%d_%m_%Y_%H_%M_%S')
-    login = f'ya_kor_{data}'
+    login = f'ya_kor_{data}'+str(randint(1, 10))
     password = '5668hjghkjkn'
     email = f'{login}@gmail.ru'
     new_email = f'new_{login}_1@mail.com'
+    new_password = 'fjghjkerth56573jkkj'
 
-    User = namedtuple('User', ['login', 'password', 'email', 'new_email'])
-    user = User(login, password, email, new_email)
+    User = namedtuple('User', ['login', 'password', 'email', 'new_email', 'new_password'])
+    user = User(login, password, email, new_email, new_password)
     return user
