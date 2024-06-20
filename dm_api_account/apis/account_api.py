@@ -15,6 +15,17 @@ class AccountApi(RestClient):
         )
         return reg_resp
 
+    def get_v1_account(self, **kwargs):
+        """
+        Get current user
+        :return:
+        """
+        resp = self.get(
+            path='/v1/account',
+            **kwargs
+        )
+        return resp
+
     def put_v1_account_token(self, token):
         """
         Activate registered user
