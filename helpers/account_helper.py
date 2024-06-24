@@ -83,25 +83,9 @@ class AccountHelper:
         token = self.get_activation_token_by_login(login)
         assert token is not None, f"Токен для пользователя {login} не был получен"
 
-    def user_login_403(self, login: str, password: str, remember_me: bool = True):
-
-        json_data = {
-            'login': login,
-            'password': password,
-            'rememberMe': remember_me,
-        }
-
-        login_resp = self.dm_account_api.login_api.post_v1_account_login(json_data=json_data)
-        assert login_resp.status_code == 403, 'Пользователь смог авторизоваться'
-        return login_resp
-
-    def activation_user_after_change_email(self, email: str):
-
-        token = self.get_new_activation_token_by_email(email)
-        assert token is not None, f"Токен для пользователя {email} не получен"
-
         response = self.dm_account_api.account_api.put_v1_account_token(token=token)
         assert response.status_code == 200, "Пользователь не активирован"
+        return response
 
     def reset_user_password(self, login: str, email: str):
         json_data = {
@@ -110,9 +94,7 @@ class AccountHelper:
         }
         response = self.dm_account_api.account_api.post_v1_account_password(json_data)
         assert response.status_code == 200, 'Пароль не был сброшен'
-        return response
 
-    def get_token_after_reset_password(self, login: str):
         token = self.get_reset_token_by_login(login)
         assert token is not None, f"Токен для пользователя {login} не получен"
         return token
@@ -128,13 +110,21 @@ class AccountHelper:
         assert response.status_code == 200, 'Пароль не был изменен'
         return response
 
-    def logout_user(self):
-        response = self.dm_account_api.login_api.delete_v1_account_login()
+    def logout_user(self, **kwargs):
+        token = self.user_login(**kwargs)
+        headers = {
+            "x-dm-auth-token": token.headers["x-dm-auth-token"]
+        }
+        response = self.dm_account_api.login_api.delete_v1_account_login(headers=headers)
         assert response.status_code == 204, 'Пользователь не вышел из учетной записи'
         return response
 
-    def logout_user_from_all_device(self):
-        response = self.dm_account_api.login_api.delete_v1_account_login_all()
+    def logout_user_from_all_device(self, **kwargs):
+        token = self.user_login(**kwargs)
+        headers = {
+            "x-dm-auth-token": token.headers["x-dm-auth-token"]
+        }
+        response = self.dm_account_api.login_api.delete_v1_account_login_all(headers=headers)
         assert response.status_code == 204, 'Пользователь не вышел из учетной записи на всех устройствах'
         return response
 

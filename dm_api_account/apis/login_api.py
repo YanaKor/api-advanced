@@ -15,24 +15,26 @@ class LoginApi(RestClient):
         )
         return login_resp
 
-    def delete_v1_account_login(self):
+    def delete_v1_account_login(self, **kwargs):
         """
         Logout as current user
         :param :
         :return:
         """
         logout_resp = self.delete(
-            path='/v1/account/login'
+            path='/v1/account/login',
+            **kwargs
         )
         return logout_resp
 
-    def delete_v1_account_login_all(self):
+    def delete_v1_account_login_all(self, **kwargs):
         """
         Logout from every device
         :param:
         :return:
         """
         logout_resp = self.delete(
-            path='/v1/account/login/all'
+            path='/v1/account/login/all',
+            **kwargs
         )
         return logout_resp

@@ -5,5 +5,4 @@ def test_delete_v1_account_login(account_helper, prepare_user):
 
     account_helper.register_user(login=login, password=password, email=email)
     account_helper.user_login(login=login, password=password)
-    account_helper.auth_client(login=login, password=password)
-    account_helper.logout_user()
+    account_helper.logout_user(login=login, password=password)
