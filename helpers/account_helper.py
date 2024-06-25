@@ -33,9 +33,7 @@ class AccountHelper:
         self.mailhog = mailhog
 
     def auth_client(self, login: str, password: str):
-        response = self.dm_account_api.login_api.post_v1_account_login(
-            json_data={'login': login, 'password': password}
-        )
+        response = self.user_login(login=login, password=password)
         token = {
             'x-dm-auth-token': response.headers['x-dm-auth-token']
         }
@@ -51,8 +49,10 @@ class AccountHelper:
 
         reg_resp = self.dm_account_api.account_api.post_v1_account(json_data)
         assert reg_resp.status_code == 201, f'Пользователь не был создан {reg_resp.json()}'
-
+        start_time = time.time()
         token = self.get_activation_token_by_login(login)
+        end_time = time.time()
+        assert end_time - start_time < 3, 'Время ожидания активации превышено'
         assert token is not None, f'Токен для пользователя {login} не был получен'
 
         activate_resp = self.dm_account_api.account_api.put_v1_account_token(token)
@@ -67,6 +67,7 @@ class AccountHelper:
         }
 
         login_resp = self.dm_account_api.login_api.post_v1_account_login(json_data)
+        assert login_resp.headers['x-dm-auth-token'], 'Токерн для пользователя не был получен'
         assert login_resp.status_code == 200, f'Пользователь {login} не смог авторизоваться'
         return login_resp
 
