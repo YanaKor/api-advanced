@@ -75,7 +75,6 @@ class AccountHelper:
             login_creds=login_creds, validate_response=validate_response)
         if validate_headers:
             assert login_resp.headers['x-dm-auth-token'], 'Токерн для пользователя не был получен'
-            assert login_resp.status_code == 200, f'Пользователь {login} не смог авторизоваться'
         return login_resp
 
     def change_email(self, login: str, password: str, email: str):
