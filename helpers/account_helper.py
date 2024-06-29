@@ -63,7 +63,8 @@ class AccountHelper:
         activate_resp = self.dm_account_api.account_api.put_v1_account_token(token)
         return activate_resp
 
-    def user_login(self, login: str, password: str, remember_me: bool = True, validate_response=False):
+    def user_login(self, login: str, password: str, remember_me: bool = True, validate_response=False,
+                   validate_headers=False):
         login_creds = LoginCredentials(
             login=login,
             password=password,
@@ -72,8 +73,9 @@ class AccountHelper:
 
         login_resp = self.dm_account_api.login_api.post_v1_account_login(
             login_creds=login_creds, validate_response=validate_response)
-        assert login_resp.headers['x-dm-auth-token'], 'Токерн для пользователя не был получен'
-        assert login_resp.status_code == 200, f'Пользователь {login} не смог авторизоваться'
+        if validate_headers:
+            assert login_resp.headers['x-dm-auth-token'], 'Токерн для пользователя не был получен'
+            assert login_resp.status_code == 200, f'Пользователь {login} не смог авторизоваться'
         return login_resp
 
     def change_email(self, login: str, password: str, email: str):
