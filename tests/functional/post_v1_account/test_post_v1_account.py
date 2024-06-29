@@ -39,8 +39,5 @@ def test_post_v1_account(account_helper, prepare_user):
     ('y', '111@m.ru', 'qwertyuy', 400, 'Validation failed')],
                          ids=['short password', 'invalid email', 'invalid password'])
 def test_post_v1_account_negative(account_helper, login, email, password, expected_status_code, error_message):
-    login = login
-    password = password
-    email = email
     with check_status_code_http(expected_status_code, error_message):
         account_helper.register_user(login=login, password=password, email=email)
