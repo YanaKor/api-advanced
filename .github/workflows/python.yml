@@ -2,6 +2,11 @@ name: Python Tests
 
 on: [ push, pull_request ]
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   test:
     name: Python test
@@ -38,7 +43,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'microsoft'
-          version: '17'
+          java-version: '17'
       - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz && sudo tar -xvzf allure-2.29.0.tgz -C /opt/ && sudo ln -s /opt/allure-2.29.0/bin/allure /usr/bin/allure
       - name: Download allure results
         uses: actions/download-artifact@v3
