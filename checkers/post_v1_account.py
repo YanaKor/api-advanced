@@ -7,13 +7,13 @@ from hamcrest import assert_that, has_property, starts_with, all_of, instance_of
 class PostV1Account:
 
     @classmethod
-    def check_response_values(cls, response):
+    def check_response_values(cls, response, name):
         with allure.step('Check response'):
             today = datetime.now().strftime('%Y-%m-%d')
             assert_that(str(response.resource.registration), starts_with(today))
             assert_that(
                 response, all_of(
-                    has_property('resource', has_property('login', starts_with('ya_kor'))),
+                    has_property('resource', has_property('login', starts_with(name))),
                     has_property('resource', has_property('registration', instance_of(datetime))),
                     has_property(
                         'resource', has_properties(

@@ -15,7 +15,7 @@ class TestPostV1Account:
 
         account_helper.register_user(login=login, email=email, password=password)
         response = account_helper.user_login(login=login, password=password, validate_response=True)
-        PostV1Account.check_response_values(response)
+        PostV1Account.check_response_values(response, name='ya_kor')
 
     @allure.sub_suite('Negative tests')
     @allure.title('Register new user with invalid data')
