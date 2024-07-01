@@ -1,0 +1,97 @@
+{
+    "service": "api",
+    "event_id": "da98dc83-f511-4890-a649-51cecfc83a0c",
+    "method": "POST",
+    "full_url": "http://5.63.153.31:5051/v1/account",
+    "params": null,
+    "headers": null,
+    "json": {
+        "login": "ya_kor_01_07_2024_19_48_168",
+        "email": "ya_kor_01_07_2024_19_48_168@gmail.ru",
+        "password": "5668hjghkjkn"
+    },
+    "data": null,
+    "event": "Request"
+}
+curl -X POST -H 'Accept: */*' -H 'Accept-Encoding: gzip, deflate' -H 'Connection: keep-alive' -H 'Content-Length: 117' -H 'Content-Type: application/json' -H 'User-Agent: python-requests/2.32.3' -d '{"login": "ya_kor_01_07_2024_19_48_168", "email": "ya_kor_01_07_2024_19_48_168@gmail.ru", "password": "5668hjghkjkn"}' http://5.63.153.31:5051/v1/account
+{
+    "service": "api",
+    "event_id": "da98dc83-f511-4890-a649-51cecfc83a0c",
+    "status_code": 201,
+    "headers": "{'Content-Length': '0', 'Date': 'Mon, 01 Jul 2024 16:48:15 GMT', 'Server': 'Kestrel', 'Location': 'http://5.63.153.31:5051/v1/users/ya_kor_01_07_2024_19_48_168'}",
+    "json": {},
+    "event": "Response"
+}
+{
+    "service": "api",
+    "event_id": "e61bf942-b78c-4c21-bf0f-0bfd04fe02c6",
+    "method": "PUT",
+    "full_url": "http://5.63.153.31:5051/v1/account/47b516d5-4001-4941-b341-c49b5503220a",
+    "params": null,
+    "headers": {
+        "accept": "text/plain"
+    },
+    "json": null,
+    "data": null,
+    "event": "Request"
+}
+curl -X PUT -H 'Accept-Encoding: gzip, deflate' -H 'Connection: keep-alive' -H 'Content-Length: 0' -H 'User-Agent: python-requests/2.32.3' -H 'accept: text/plain' http://5.63.153.31:5051/v1/account/47b516d5-4001-4941-b341-c49b5503220a
+{
+    "service": "api",
+    "event_id": "e61bf942-b78c-4c21-bf0f-0bfd04fe02c6",
+    "status_code": 200,
+    "headers": "{'Content-Type': 'application/json; charset=utf-8', 'Date': 'Mon, 01 Jul 2024 16:48:15 GMT', 'Server': 'Kestrel', 'Transfer-Encoding': 'chunked'}",
+    "json": {
+        "resource": {
+            "login": "ya_kor_01_07_2024_19_48_168",
+            "roles": [
+                "Guest",
+                "Player"
+            ],
+            "rating": {
+                "enabled": true,
+                "quality": 0,
+                "quantity": 0
+            }
+        }
+    },
+    "event": "Response"
+}
+{
+    "service": "api",
+    "event_id": "6209486c-da52-4bf5-a82e-292418fa7fb1",
+    "method": "POST",
+    "full_url": "http://5.63.153.31:5051/v1/account/login",
+    "params": null,
+    "headers": null,
+    "json": {
+        "login": "ya_kor_01_07_2024_19_48_168",
+        "password": "5668hjghkjkn",
+        "rememberMe": true
+    },
+    "data": null,
+    "event": "Request"
+}
+curl -X POST -H 'Accept: */*' -H 'Accept-Encoding: gzip, deflate' -H 'Connection: keep-alive' -H 'Content-Length: 88' -H 'Content-Type: application/json' -H 'User-Agent: python-requests/2.32.3' -d '{"login": "ya_kor_01_07_2024_19_48_168", "password": "5668hjghkjkn", "rememberMe": true}' http://5.63.153.31:5051/v1/account/login
+{
+    "service": "api",
+    "event_id": "6209486c-da52-4bf5-a82e-292418fa7fb1",
+    "status_code": 200,
+    "headers": "{'Content-Type': 'application/json; charset=utf-8', 'Date': 'Mon, 01 Jul 2024 16:48:15 GMT', 'Server': 'Kestrel', 'Transfer-Encoding': 'chunked', 'X-Dm-Auth-Token': 'IQJh+zgzF5D/pyokFkqwLGrceqbbLHE44L7J3p70zz8ZZdunnEBucM2ME8A0OQnQTGR1+m5HycNORsDU6ZR1HXRQKJaRet1KAHnMpGS9OTg/uc12vRBV1LPwzRmM+13vPar4F5Gi2Q0='}",
+    "json": {
+        "resource": {
+            "login": "ya_kor_01_07_2024_19_48_168",
+            "roles": [
+                "Guest",
+                "Player"
+            ],
+            "rating": {
+                "enabled": true,
+                "quality": 0,
+                "quantity": 0
+            },
+            "registration": "2024-07-01T16:48:16.130142+00:00"
+        }
+    },
+    "event": "Response"
+}
