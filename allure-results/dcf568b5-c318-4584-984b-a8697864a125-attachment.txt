@@ -1,1 +1,0 @@
-curl -X POST -H 'Accept: */*' -H 'Accept-Encoding: gzip, deflate' -H 'Connection: keep-alive' -H 'Content-Length: 117' -H 'Content-Type: application/json' -H 'User-Agent: python-requests/2.32.3' -d '{"login": "ya_kor_01_07_2024_20_19_208", "email": "ya_kor_01_07_2024_20_19_208@gmail.ru", "password": "5668hjghkjkn"}' http://5.63.153.31:5051/v1/account
