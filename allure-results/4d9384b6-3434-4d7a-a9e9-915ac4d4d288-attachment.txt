@@ -1,1 +1,0 @@
-curl -X PUT -H 'Accept-Encoding: gzip, deflate' -H 'Connection: keep-alive' -H 'Content-Length: 0' -H 'User-Agent: python-requests/2.32.3' -H 'accept: text/plain' http://5.63.153.31:5051/v1/account/8a4d99c9-b1b0-4804-b041-00ea9bdf9306
