@@ -1,5 +1,7 @@
 import time
 from json import loads
+
+import allure
 from retrying import retry
 
 from dm_api_account.models.change_email import ChangeEmail
@@ -37,6 +39,7 @@ class AccountHelper:
         self.dm_account_api = dm_account_api
         self.mailhog = mailhog
 
+    @allure.step('Get an authorized user token')
     def auth_client(self, login: str, password: str):
         response = self.user_login(login=login, password=password)
         token = {
@@ -45,6 +48,7 @@ class AccountHelper:
         self.dm_account_api.account_api.set_headers(token)
         self.dm_account_api.login_api.set_headers(token)
 
+    @allure.step('Register new user')
     def register_user(self, login: str, password: str, email: str):
         registration = Registration(
             login=login,
@@ -62,6 +66,7 @@ class AccountHelper:
         activate_resp = self.dm_account_api.account_api.put_v1_account_token(token)
         return activate_resp
 
+    @allure.step('User activation')
     def user_login(self, login: str, password: str, remember_me: bool = True, validate_response=False,
                    validate_headers=False):
         login_creds = LoginCredentials(
@@ -76,6 +81,7 @@ class AccountHelper:
             assert login_resp.headers['x-dm-auth-token'], 'Токен для пользователя не был получен'
         return login_resp
 
+    @allure.step('Change email')
     def change_email(self, login: str, password: str, email: str):
 
         change_email = ChangeEmail(
@@ -91,6 +97,7 @@ class AccountHelper:
         response = self.dm_account_api.account_api.put_v1_account_token(token=token)
         return response
 
+    @allure.step('Reset user password')
     def reset_user_password(self, login: str, email: str):
         reset_password = ResetPassword(
             login=login,
@@ -102,6 +109,7 @@ class AccountHelper:
         assert token is not None, f"Токен для пользователя {login} не получен"
         return token
 
+    @allure.step('Change user password')
     def change_user_password(self, login: str, token: str, password: str, new_password: str):
         change_password = ChangePassword(
             login=login,
@@ -120,6 +128,7 @@ class AccountHelper:
         response = self.dm_account_api.login_api.delete_v1_account_login_all()
         return response
 
+    @allure.step('Get activation token from email')
     @retry(stop_max_attempt_number=5, retry_on_result=retry_if_result_none, wait_fixed=1000)
     def get_activation_token_by_login(self, login):
         token = None
@@ -131,6 +140,7 @@ class AccountHelper:
                 token = user_data['ConfirmationLinkUrl'].split('/')[-1]
         return token
 
+    @allure.step('Get reset token from email')
     @retry(stop_max_attempt_number=5, retry_on_result=retry_if_result_none, wait_fixed=1000)
     def get_reset_token_by_login(self, login):
         token = None
@@ -143,6 +153,7 @@ class AccountHelper:
                 break
         return token
 
+    @allure.step('Get activation token by email')
     @retrier
     def get_new_activation_token_by_email(self, changed_email: str):
         token = None

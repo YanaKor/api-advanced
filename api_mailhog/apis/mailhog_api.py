@@ -1,8 +1,10 @@
+import allure
+
 from restclient.client import RestClient
 
 
 class MailhogApi(RestClient):
-
+    @allure.step('Get all messages')
     def get_api_v2_messages(self, limit=50):
         """
         Get users emails
