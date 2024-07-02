@@ -1,0 +1,7 @@
+service:
+  dm_api_account: 'http://5.63.153.31:5051'
+  mailhog: 'http://5.63.153.31:5025'
+
+user:
+  login: 'ya_kor_20_06_2024_20_56_24'
+  password: '5668hjghkjkn'
