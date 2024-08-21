@@ -2,6 +2,7 @@ import allure
 import pytest
 from checkers.http_checkers import check_status_code_http
 from checkers.post_v1_account import PostV1Account
+from helpers.dm_db import DmDatabase
 
 
 @allure.suite('Method validation tests POST v1/account')
@@ -9,12 +10,21 @@ from checkers.post_v1_account import PostV1Account
 class TestPostV1Account:
     @allure.title('Check registration new user')
     def test_post_v1_account(self, account_helper, prepare_user):
+        db = DmDatabase('postgres', 'admin', '5.63.153.31', 'dm3.5')
+
         login = prepare_user.login
         email = prepare_user.email
         password = prepare_user.password
 
         account_helper.register_user(login=login, email=email, password=password)
+        dataset = db.get_user_by_login(login=login)
+        for row in dataset:
+            assert row['Login'] == login, f'User {login} not registered'
+            assert row['Activated'] is False, f'User {login} was activated'
+
         response = account_helper.user_login(login=login, password=password, validate_response=True)
+        for row in dataset:
+            assert row['Activated'] is True, f'User {login} not activated'
         PostV1Account.check_response_values(response, name='ya_kor')
 
     @allure.sub_suite('Negative tests')
