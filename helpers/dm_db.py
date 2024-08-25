@@ -7,14 +7,37 @@ class DmDatabase:
         self.db = DbClient(user, password, host, database)
 
     def get_all_users(self):
-        query = 'select * from "public"."Users"'
+        query = '''
+        select * 
+        from "public"."Users" 
+        order by "RegistrationDate" 
+        desc '''
         dataset = self.db.send_query(query)
         return dataset
 
     def get_user_by_login(self, login):
         query = f'''
         select * from "public"."Users"
-        where "Login" = {login}
+        where "Login" = '{login}'
         '''
         dataset = self.db.send_query(query=query)
         return dataset
+
+    def set_activation(self, login):
+        query = f'''
+        update "public"."Users"
+        set "Activated" = true
+        where "Login" = '{login}'
+        '''
+        dataset = self.db.send_query(query=query)
+        return dataset
+
+    def delete_user_by_login(self, login):
+        query = f'''
+        delete from "public"."Users"
+         where "Login" = '{login}'
+        '''
+        dataset = self.db.send_bulk_query(query=query)
+        return dataset
+
+

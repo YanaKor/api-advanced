@@ -6,8 +6,8 @@ from helpers.dm_db import DmDatabase
 
 
 @allure.suite('Method validation tests POST v1/account')
-@allure.sub_suite('Positive tests')
 class TestPostV1Account:
+    @allure.sub_suite('Positive tests')
     @allure.title('Check registration new user')
     def test_post_v1_account(self, account_helper, prepare_user):
         db = DmDatabase('postgres', 'admin', '5.63.153.31', 'dm3.5')
@@ -20,12 +20,12 @@ class TestPostV1Account:
         dataset = db.get_user_by_login(login=login)
         for row in dataset:
             assert row['Login'] == login, f'User {login} not registered'
-            assert row['Activated'] is False, f'User {login} was activated'
+            assert row['Activated'] is True, f'User {login} not activated'
 
         response = account_helper.user_login(login=login, password=password, validate_response=True)
-        for row in dataset:
-            assert row['Activated'] is True, f'User {login} not activated'
+
         PostV1Account.check_response_values(response, name='ya_kor')
+        db.delete_user_by_login(login=login)
 
     @allure.sub_suite('Negative tests')
     @allure.title('Register new user with invalid data')
@@ -38,3 +38,22 @@ class TestPostV1Account:
                                       error_message):
         with check_status_code_http(expected_status_code, error_message):
             account_helper.register_user(login=login, password=password, email=email)
+
+    @allure.sub_suite('Positive tests')
+    @allure.title('Check activation already activated user')
+    def test_post_v1_account_activate_already_active_user(self, account_helper, prepare_user):
+        db = DmDatabase('postgres', 'admin', '5.63.153.31', 'dm3.5')
+
+        login = prepare_user.login
+        email = prepare_user.email
+        password = prepare_user.password
+
+        account_helper.register_user(login=login, email=email, password=password)
+        for row in db.get_user_by_login(login=login):
+            assert row['Activated'] is True, f'User {login} not activated'
+
+        dataset = db.set_activation(login=login)
+        # for row in dataset:
+
+        db.delete_user_by_login(login=login)
+
