@@ -1,14 +1,5 @@
-# database:
-#   dm3_5:
-#     host: 5.63.153.31
-#     port: 5432
-#     database: dm3.5
-#     user: postgres
-#     password: admin
-
-from helpers.dm_db import DmDatabase
-
 import structlog
+from helpers.orm_db import OrmDatabase
 
 structlog.configure(
     processors=[
@@ -19,7 +10,14 @@ structlog.configure(
     ]
 )
 
+def test_orm():
+    user = 'postgres'
+    password = 'admin'
+    host = '5.63.153.31'
+    database = 'dm3.5'
 
-def test_db():
-    db = DmDatabase('postgres', 'admin', '5.63.153.31', 'dm3.5')
-    db.get_all_users()
+    orm = OrmDatabase(user, password, host, database)
+    # orm.get_all_users()
+    orm.get_user_by_login('yana_')
+
+    orm.db.close_connection()

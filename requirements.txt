@@ -27,3 +27,4 @@ urllib3==2.2.1
 vyper-config==1.2.1
 watchdog==4.0.1
 records~=0.6.0
+SQLAlchemy~=1.4.46
